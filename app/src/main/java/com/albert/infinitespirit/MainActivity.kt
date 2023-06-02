@@ -16,10 +16,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.albert.feature_home.presentation.DemoScreen
+import com.albert.feature_home.presentation.nav.NavigateFeature
+import com.albert.feature_home.presentation.nav.NavigateFeatureHome
 import com.albert.infinitespirit.addtasks.ui.TasksViewModel
 import com.albert.infinitespirit.detail.ui.DetailScreen
-import com.albert.infinitespirit.home.ui.HomeScreen
+import com.albert.infinitespirit.home.ui.DemoScreenOne
+import com.albert.infinitespirit.home.ui.DemoScreenOne2
 import com.albert.infinitespirit.nav.Screen
 import com.albert.infinitespirit.ui.theme.InfiniteSpiritTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,7 +42,7 @@ class MainActivity : ComponentActivity() {
                     //TasksScreen(tasksViewModel)
                     //TasksScreen()
                     //Greeting("Android")
-                    NavigateApp()
+                    NavigatePrincipal()
                 }
             }
         }
@@ -66,9 +68,8 @@ fun GreetingPreview() {
 @Composable
 fun NavigateApp() {
     val navController = rememberNavController()
-
-    NavHost(navController, startDestination = Screen.Home.route) {
-        composable(Screen.Home.route) { HomeScreen(navController) }
+    NavHost(navController, startDestination = Screen.NavFeatureHome.route) {
+        composable(Screen.NavFeatureHome.route) { DemoScreenOne(navController) }
         composable(
             route = Screen.Detail.route,
             arguments = listOf(
@@ -77,5 +78,28 @@ fun NavigateApp() {
         ) { backStackEntry ->
             backStackEntry.arguments?.let { DetailScreen(navController, args = it) }
         }
+    }
+}
+
+@Composable
+fun NavigateGeneral() {
+    val navController = rememberNavController()
+    NavHost(navController, startDestination = Screen.NavFeatureHome.route) {
+        composable(Screen.NavFeatureHome.route) { DemoScreenOne2(navController) }
+        composable(
+            route = "Feature/{age}",
+            arguments = listOf(navArgument("age") { type = NavType.IntType })
+        ) { backStackEntry ->
+            backStackEntry.arguments?.let { NavigateFeature(args = it) }
+        }
+    }
+}
+
+
+@Composable
+fun NavigatePrincipal() {
+    val navController = rememberNavController()
+    NavHost(navController, startDestination = Screen.NavFeatureHome.route) {
+        composable(Screen.NavFeatureHome.route) { NavigateFeatureHome() }
     }
 }

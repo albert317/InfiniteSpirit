@@ -6,7 +6,8 @@ sealed class Screen(val route: String) {
         const val NAME = "name"
     }
 
-    object Home : Screen("home")
+    object NavFeatureHome : Screen("nav_feature_home")
+
     object Detail : Screen("detail/{$AGE}/{$NAME}")
 
     fun withArgs(args: Map<String, Any>): String {

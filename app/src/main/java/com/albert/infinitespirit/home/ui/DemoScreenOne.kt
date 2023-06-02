@@ -7,10 +7,20 @@ import androidx.navigation.NavController
 import com.albert.infinitespirit.nav.Screen
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun DemoScreenOne(navController: NavController) {
     Button(onClick = {
         val args = mapOf(Screen.AGE to 200324, Screen.NAME to "ALBERT")
         navController.navigate(Screen.Detail.withArgs(args))
+    }) {
+        Text("Ir a detalles del producto")
+    }
+}
+
+@Composable
+fun DemoScreenOne2(navController: NavController) {
+    Button(onClick = {
+        val args = mapOf("age" to 200324)
+        navController.navigate("Feature/123456")
     }) {
         Text("Ir a detalles del producto")
     }
