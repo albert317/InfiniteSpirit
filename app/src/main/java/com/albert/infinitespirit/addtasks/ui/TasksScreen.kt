@@ -69,7 +69,7 @@ fun TasksScreen(tasksViewModel: TasksViewModel) {
 
         is TasksUiState.Success -> {
             Box(modifier = Modifier.fillMaxSize()) {
-                TaskList((uiState as TasksUiState.Success).tasks,tasksViewModel)
+                TaskList((uiState as TasksUiState.Success).tasks, tasksViewModel)
                 AddTaskDialog(
                     show = showDialog,
                     onDismiss = { tasksViewModel.onDialogClose() },
@@ -83,7 +83,7 @@ fun TasksScreen(tasksViewModel: TasksViewModel) {
 }
 
 @Composable
-fun TaskList(tasks:List<TaskModel>,tasksViewModel: TasksViewModel) {
+fun TaskList(tasks: List<TaskModel>, tasksViewModel: TasksViewModel) {
 
     LazyColumn(
         modifier = Modifier.padding(8.dp),

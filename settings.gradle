@@ -14,3 +14,8 @@ dependencyResolutionManagement {
 }
 rootProject.name = "InfiniteSpirit"
 include ':app'
+include ':feature_home'
+include ':feature_home:data'
+include ':feature_home:domain'
+include ':feature_home:usecase'
+include ':feature_home:presentation'
