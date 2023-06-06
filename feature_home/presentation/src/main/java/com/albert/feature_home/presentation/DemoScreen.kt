@@ -8,7 +8,7 @@ import androidx.navigation.NavController
 
 
 @Composable
-fun DemoScreen(navController: NavController,args:Bundle) {
+fun DemoScreen(navController: NavController, args: Bundle) {
     // Tu código aquí...
     Button(onClick = { }) {
         Text("Holaaaaaa ${args.getInt("age")}")

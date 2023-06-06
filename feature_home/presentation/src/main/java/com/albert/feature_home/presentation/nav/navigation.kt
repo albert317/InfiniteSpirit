@@ -2,12 +2,12 @@ package com.albert.feature_home.presentation.nav
 
 import android.os.Bundle
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.albert.feature_home.presentation.DemoScreen
-import com.albert.feature_home.presentation.ui.init.InitScreen
-
+import com.albert.feature_home.presentation.ui.init.HomeScreen
 
 sealed class FeatureScreen(val route: String) {
     companion object {
@@ -31,8 +31,11 @@ sealed class FeatureScreen(val route: String) {
 @Composable
 fun NavigateFeature(args: Bundle) {
     val navController = rememberNavController()
+    val context = LocalContext.current
     NavHost(navController, startDestination = "DemoScreen") {
-        composable("DemoScreen") { DemoScreen(navController, args) }
+        composable("DemoScreen") {
+            DemoScreen(navController, args)
+        }
     }
 }
 
@@ -40,6 +43,8 @@ fun NavigateFeature(args: Bundle) {
 fun NavigateFeatureHome() {
     val navController = rememberNavController()
     NavHost(navController, startDestination = FeatureScreen.InitScreen.route) {
-        composable(FeatureScreen.InitScreen.route) { InitScreen() }
+        composable(FeatureScreen.InitScreen.route) {
+            HomeScreen()
+        }
     }
 }

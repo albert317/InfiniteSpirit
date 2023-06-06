@@ -11,6 +11,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/commons" />
+            <option value="$PROJECT_DIR$/commons/database" />
             <option value="$PROJECT_DIR$/feature_home" />
             <option value="$PROJECT_DIR$/feature_home/data" />
             <option value="$PROJECT_DIR$/feature_home/domain" />
