@@ -5,5 +5,5 @@ import com.albert.feature_home.domain.DrinkModel
 import javax.inject.Inject
 
 class SaveDrinkUseCase @Inject constructor(private val repository: DrinkRepository) {
-    suspend operator fun invoke(drinkModel: DrinkModel) = repository.saveDrink(drinkModel)
+    suspend operator fun invoke(drinkModel: DrinkModel) = repository.saveDrinkRemote(drinkModel)
 }

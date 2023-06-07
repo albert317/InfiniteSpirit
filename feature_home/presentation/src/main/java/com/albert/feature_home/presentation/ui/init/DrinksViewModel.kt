@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.albert.feature_home.domain.DrinkModel
 import com.albert.feature_home.usecase.drink.GetPopularDrinksUseCase
+import com.albert.feature_home.usecase.drink.RequestDrinksUseCase
 import com.albert.feature_home.usecase.drink.SaveDrinkUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +17,7 @@ import javax.inject.Inject
 class DrinksViewModel @Inject constructor(
     private val getPopularDrinks: GetPopularDrinksUseCase,
     private val saveDrinkUseCase: SaveDrinkUseCase,
+    private val requestDrinksUseCase: RequestDrinksUseCase,
 ) : ViewModel() {
 
     private val _uiStateDrinks = MutableStateFlow<DrinksUiState>(DrinksUiState.Loading)
@@ -23,6 +25,13 @@ class DrinksViewModel @Inject constructor(
 
     init {
         getPopulars()
+        collectDrinks()
+    }
+
+    private fun collectDrinks() {
+        viewModelScope.launch {
+            requestDrinksUseCase.invoke()
+        }
     }
 
     private fun getPopulars() {
@@ -37,11 +46,13 @@ class DrinksViewModel @Inject constructor(
         viewModelScope.launch {
             val drinks = listOf(
                 DrinkModel(
-                    id = System.currentTimeMillis().hashCode().toString(),
+                    id = System.currentTimeMillis().toString(),
                     name = "gdfgd",
                     description = "gdfg",
                     origin = "dfgdfgdf",
-                    photo = "gdfgdfg"
+                    photo = "gdfgdfg",
+                    timeUpdate = System.currentTimeMillis().toString(),
+                    timeRegister = System.currentTimeMillis().toString()
                 )
             )
             drinks.map { saveDrinkUseCase.invoke(it) }

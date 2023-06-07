@@ -5,10 +5,10 @@ import androidx.room.Room
 import com.albert.commons.database.data.InfiniteSpiritDataBase
 import com.albert.commons.database.data.dao.CategoryDao
 import com.albert.commons.database.data.dao.DrinkDao
-import com.albert.commons.database.datasource.CategoryLocalDataSource
-import com.albert.commons.database.datasource.DrinkLocalDataSource
-import com.albert.feature_home.data.datasource.CategoryDataSource
-import com.albert.feature_home.data.datasource.DrinkDataSource
+import com.albert.commons.database.datasource.CategoryRoomDataSource
+import com.albert.commons.database.datasource.DrinkRoomDataSource
+import com.albert.feature_home.data.datasource.CategoryLocalDataSource
+import com.albert.feature_home.data.datasource.DrinkLocalDataSource
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -51,8 +51,9 @@ class DatabaseInfiniteSpiritModule {
 @InstallIn(SingletonComponent::class)
 abstract class AppDataModule {
     @Binds
-    abstract fun bindDrinkLocalDataSource(drinkLocalDataSource: DrinkLocalDataSource): DrinkDataSource
+    abstract fun bindDrinkLocalDataSource(drinkRoomDataSource: DrinkRoomDataSource): DrinkLocalDataSource
 
     @Binds
-    abstract fun bindCategoryLocalDataSource(categoryLocalDataSource: CategoryLocalDataSource): CategoryDataSource
+    abstract fun bindCategoryLocalDataSource(categoryRoomDataSource: CategoryRoomDataSource): CategoryLocalDataSource
+
 }

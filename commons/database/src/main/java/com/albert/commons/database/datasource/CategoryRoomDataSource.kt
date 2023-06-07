@@ -2,14 +2,14 @@ package com.albert.commons.database.datasource
 
 import com.albert.commons.database.data.dao.CategoryDao
 import com.albert.commons.database.data.entity.CategoryEntity
-import com.albert.feature_home.data.datasource.CategoryDataSource
+import com.albert.feature_home.data.datasource.CategoryLocalDataSource
 import com.albert.feature_home.domain.CategoryModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class CategoryLocalDataSource @Inject constructor(private val categoryDao: CategoryDao) :
-    CategoryDataSource {
+class CategoryRoomDataSource @Inject constructor(private val categoryDao: CategoryDao) :
+    CategoryLocalDataSource {
     override val categories: Flow<List<CategoryModel>> =
         categoryDao.getCategories().map { categories -> categories.map { it.toModel() } }
 

@@ -1,11 +1,11 @@
 package com.albert.feature_home.data.repository
 
-import com.albert.feature_home.data.datasource.CategoryDataSource
+import com.albert.feature_home.data.datasource.CategoryLocalDataSource
 import com.albert.feature_home.domain.CategoryModel
 import javax.inject.Inject
 
 class CategoryRepository @Inject constructor(
-    private val categoryDataSource: CategoryDataSource,
+    private val categoryDataSource: CategoryLocalDataSource,
 ) {
     fun getCategories() = categoryDataSource.categories
     suspend fun isEmpty() = categoryDataSource.isEmpty()

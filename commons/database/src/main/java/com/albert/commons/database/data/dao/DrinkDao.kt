@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DrinkDao {
-    @Query("SELECT * from DrinkEntity")
+    @Query("SELECT * from DrinkEntity ORDER BY timeRegister DESC")
     fun getDrinks(): Flow<List<DrinkEntity>>
 
     @Query("SELECT * FROM DrinkEntity WHERE id=:id")
@@ -27,5 +27,11 @@ interface DrinkDao {
 
     @Delete
     suspend fun deleteDrink(drinkEntity: DrinkEntity)
+
+    @Query("SELECT * FROM DrinkEntity WHERE id=:id")
+    suspend fun findByIdSimple(id: String): DrinkEntity?
+
+    @Query("SELECT * from DrinkEntity")
+    suspend fun getDrinksSimple(): List<DrinkEntity>
 
 }
