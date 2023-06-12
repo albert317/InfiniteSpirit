@@ -4,12 +4,11 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class CategoryEntity(
+data class ManagerEntity(
     @PrimaryKey
-    val id: String,
+    val id:String,
     val name: String,
-    val description: String,
-    val photo: String,
+    val isUpdateRequired:Boolean,
     val timeRegister: String,
     val timeUpdate: String,
 )

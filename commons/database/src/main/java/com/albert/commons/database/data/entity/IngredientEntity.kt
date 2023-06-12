@@ -4,12 +4,11 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class CategoryEntity(
+data class IngredientEntity(
     @PrimaryKey
     val id: String,
     val name: String,
-    val description: String,
-    val photo: String,
-    val timeRegister: String,
-    val timeUpdate: String,
+    val type: String,
+    val timeRegister:String,
+    val timeUpdate:String,
 )

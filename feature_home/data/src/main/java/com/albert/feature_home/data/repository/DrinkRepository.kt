@@ -27,8 +27,9 @@ class DrinkRepository @Inject constructor(
         if (!drinkLocalDataSource.isEmpty()) {
             drinks.map { saveDrink(it) }
         } else {
+            val localDrinks = drinkLocalDataSource.drinksSimple()
             drinks.map { drink ->
-                val localDrink = drinkLocalDataSource.findByIdSimple(drink.id)
+                val localDrink = localDrinks.find { it.id == drink.id }
                 if (localDrink == null) {
                     saveDrink(drink)
                 }

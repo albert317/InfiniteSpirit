@@ -13,17 +13,20 @@ interface CategoryDao {
     @Query("SELECT * from CategoryEntity")
     fun getCategories(): Flow<List<CategoryEntity>>
 
+    @Query("SELECT * from CategoryEntity")
+    suspend fun getCategoriesSimple(): List<CategoryEntity>
+
     @Query("SELECT * FROM CategoryEntity WHERE id=:id")
     fun findById(id: String): Flow<CategoryEntity>
 
     @Query("SELECT COUNT(id) FROM CategoryEntity")
-    suspend fun categoryCount(): Int
+    suspend fun count(): Int
 
     @Insert
-    suspend fun addCategory(categoryEntity: CategoryEntity)
+    suspend fun add(categoryEntity: CategoryEntity)
 
     @Update
-    suspend fun updateCategory(categoryEntity: CategoryEntity)
+    suspend fun update(categoryEntity: CategoryEntity)
 
     @Delete
     suspend fun deleteCategory(categoryEntity: CategoryEntity)

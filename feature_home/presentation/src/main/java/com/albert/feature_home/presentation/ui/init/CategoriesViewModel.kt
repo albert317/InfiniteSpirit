@@ -37,10 +37,12 @@ class CategoriesViewModel @Inject constructor(
         viewModelScope.launch {
             saveCategoryUseCase(
                 CategoryModel(
-                    id = System.currentTimeMillis().hashCode().toString(),
+                    id = System.currentTimeMillis().toString(),
                     name = "Categoria",
                     description = "gdfg",
-                    photo = "gdfgdfg"
+                    photo = "gdfgdfg",
+                    timeRegister = System.currentTimeMillis().toString(),
+                    timeUpdate = System.currentTimeMillis().toString(),
                 )
             )
         }

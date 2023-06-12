@@ -7,16 +7,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.albert.feature_home.presentation.DemoScreen
+import com.albert.feature_home.presentation.ui.detail.DetailScreen
 import com.albert.feature_home.presentation.ui.init.HomeScreen
 
 sealed class FeatureScreen(val route: String) {
     companion object {
-        const val ID_PRODUCT = "idProduct"
+        const val ID_DRINK = "idDrink"
     }
 
     object InitScreen : FeatureScreen("feature_home_init")
 
-    object DetailScreen : FeatureScreen("feature_home_detail/{$ID_PRODUCT}}")
+    object DetailScreen : FeatureScreen("feature_home_detail/{$ID_DRINK}")
 
     fun withArgs(args: Map<String, Any>): String {
         var routeResult = route
@@ -43,8 +44,10 @@ fun NavigateFeature(args: Bundle) {
 fun NavigateFeatureHome() {
     val navController = rememberNavController()
     NavHost(navController, startDestination = FeatureScreen.InitScreen.route) {
-        composable(FeatureScreen.InitScreen.route) {
-            HomeScreen()
+        composable(FeatureScreen.InitScreen.route) { HomeScreen(navController) }
+        composable(FeatureScreen.DetailScreen.route){
+        backStackEntry->
+            backStackEntry.arguments?.getString(FeatureScreen.ID_DRINK)?.let { DetailScreen(navController,it) }
         }
     }
 }

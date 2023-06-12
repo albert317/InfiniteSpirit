@@ -1,10 +1,9 @@
 package com.albert.feature_home.domain
 
-data class CategoryModel(
+data class ManagerModel(
     val id: String,
     val name: String,
-    val description: String,
-    val photo: String,
+    val isUpdateRequired:Boolean,
     val timeRegister: String,
     val timeUpdate: String,
 )

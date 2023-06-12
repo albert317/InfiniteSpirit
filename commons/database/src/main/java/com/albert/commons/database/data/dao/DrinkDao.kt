@@ -33,5 +33,4 @@ interface DrinkDao {
 
     @Query("SELECT * from DrinkEntity")
     suspend fun getDrinksSimple(): List<DrinkEntity>
-
 }

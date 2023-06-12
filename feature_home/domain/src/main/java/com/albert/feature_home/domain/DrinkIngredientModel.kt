@@ -1,9 +1,10 @@
 package com.albert.feature_home.domain
 
-data class IngredientModel(
+data class DrinkIngredientModel(
     val id: String,
-    val name: String,
-    val type: String,
+    val idDrink: String,
+    val idIngredient: String,
+    val quantity: String,
     val timeRegister:String,
     val timeUpdate:String,
 )

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="resource1">#000000</color>
+    <color name="resource2">#002B26</color>
+    <color name="resource3">#2AFFFFFF</color>
+
+    <color name="icon_fire">#D32F2F</color>
+    <color name="icon_smile">#00796B</color>
+    <color name="icon_spa">#1E2761</color>
+
+    <color name="semi_transaparent">#68000000</color>
+
+</resources>
