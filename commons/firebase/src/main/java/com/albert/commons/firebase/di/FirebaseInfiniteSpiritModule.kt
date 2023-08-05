@@ -5,11 +5,13 @@ import com.albert.commons.firebase.datasource.DrinkCloudFireStoreDataSource
 import com.albert.commons.firebase.datasource.DrinkIngredientCloudFireStoreDataSource
 import com.albert.commons.firebase.datasource.IngredientCloudFirebaseStoreDataSource
 import com.albert.commons.firebase.datasource.ManagerCloudFirebaseStoreDataSource
+import com.albert.commons.firebase.datasource.PreparationStepCloudFirebaseStoreDataSource
 import com.albert.feature_home.data.datasource.CategoryRemoteDataSource
 import com.albert.feature_home.data.datasource.DrinkIngredientRemoteDataSource
 import com.albert.feature_home.data.datasource.DrinkRemoteDataSource
 import com.albert.feature_home.data.datasource.IngredientRemoteDataSource
 import com.albert.feature_home.data.datasource.ManagerRemoteDataSource
+import com.albert.feature_home.data.datasource.PreparationStepRemoteDataSource
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Binds
 import dagger.Module
@@ -47,5 +49,8 @@ abstract class AppDataFirebaseModule {
 
     @Binds
     abstract fun bindCategoryDataSource(categoryCloudFirebaseStoreDataSource: CategoryCloudFireStoreDataSource): CategoryRemoteDataSource
+
+    @Binds
+    abstract fun bindPreparationDataSource(preparationStepCloudFirebaseStoreDataSource: PreparationStepCloudFirebaseStoreDataSource): PreparationStepRemoteDataSource
 
 }

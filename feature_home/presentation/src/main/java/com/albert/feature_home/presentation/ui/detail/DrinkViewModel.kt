@@ -3,12 +3,11 @@ package com.albert.feature_home.presentation.ui.detail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.albert.feature_home.domain.DrinkModel
-import com.albert.feature_home.domain.IngredientModel
 import com.albert.feature_home.domain.IngredientOfDrinkModel
+import com.albert.feature_home.domain.PreparationStepModel
 import com.albert.feature_home.usecase.drink.GetDrinkUseCase
 import com.albert.feature_home.usecase.ingredient.GetIngredientsOfDrinkUseCase
-import com.albert.feature_home.usecase.ingredient.RequestIngredientsOfDrinkUseCase
-import com.albert.feature_home.usecase.ingredient.SaveRemoteIngredientOfDrinkUseCase
+import com.albert.feature_home.usecase.preparationStep.GetPreparationStepUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,28 +19,16 @@ import javax.inject.Inject
 class DrinkViewModel @Inject constructor(
     private val getDrinkUseCase: GetDrinkUseCase,
     private val getIngredientsOfDrinkUseCase: GetIngredientsOfDrinkUseCase,
-    private val saveRemoteIngredientOfDrinkUseCase: SaveRemoteIngredientOfDrinkUseCase,
-    private val requestIngredientsOfDrinkUseCase: RequestIngredientsOfDrinkUseCase,
+    private val getPreparationStepUseCase: GetPreparationStepUseCase,
 ) : ViewModel() {
 
-    private val _uiStateDrink = MutableStateFlow<DrinkUiState>(DrinkUiState.Loading)
+    private val _uiStateDrink = MutableStateFlow(DrinkUiState())
     val uiStateDrink: StateFlow<DrinkUiState> = _uiStateDrink
-
-    init {
-        viewModelScope.launch {
-            requestIngredientsOfDrinkUseCase()
-        }
-    }
 
     fun getDrink(idDrink: String) {
         viewModelScope.launch {
             getDrinkUseCase(idDrink).catch { }.collect { drink ->
-                if (_uiStateDrink.value is DrinkUiState.Success) {
-                    _uiStateDrink.value =
-                        (_uiStateDrink.value as DrinkUiState.Success).copy(drink = drink)
-                } else {
-                    _uiStateDrink.value = DrinkUiState.Success(drink, emptyList())
-                }
+                _uiStateDrink.value = _uiStateDrink.value.copy(isLoading = false, drink = drink)
             }
         }
     }
@@ -49,36 +36,25 @@ class DrinkViewModel @Inject constructor(
     fun getIngredients(idDrink: String) {
         viewModelScope.launch {
             getIngredientsOfDrinkUseCase(idDrink).catch { }.collect { ingredients ->
-                if (_uiStateDrink.value is DrinkUiState.Success) {
-                    _uiStateDrink.value =
-                        (_uiStateDrink.value as DrinkUiState.Success).copy(ingredients = ingredients)
-                } else {
-                    _uiStateDrink.value = DrinkUiState.Success(null, ingredients)
-                }
+                _uiStateDrink.value =
+                    _uiStateDrink.value.copy(isLoading = false, ingredients = ingredients)
             }
         }
     }
 
-    fun saveIngredientsOfModel(idDrink: String) {
+    fun getPreparationSteps(idDrink: String) {
         viewModelScope.launch {
-            saveRemoteIngredientOfDrinkUseCase(
-                idDrink = idDrink,
-                ingredient = IngredientModel(
-                    "12345",
-                    "Pisco",
-                    "1",
-                    System.currentTimeMillis().toString(),
-                    System.currentTimeMillis().toString()
-                ),
-                quantity = "3 onzas"
-            )
+            getPreparationStepUseCase(idDrink).catch { }.collect { steps ->
+                _uiStateDrink.value = _uiStateDrink.value.copy(isLoading = false, steps = steps)
+            }
         }
     }
 }
 
-sealed interface DrinkUiState {
-    object Loading : DrinkUiState
-    data class Error(val throwable: Throwable) : DrinkUiState
-    data class Success(val drink: DrinkModel?, val ingredients: List<IngredientOfDrinkModel>) :
-        DrinkUiState
-}
+data class DrinkUiState(
+    val isLoading: Boolean = false,
+    val ingredients: List<IngredientOfDrinkModel> = emptyList(),
+    val steps: List<PreparationStepModel> = emptyList(),
+    val drink: DrinkModel? = null,
+    val error: Throwable? = null,
+)

@@ -18,7 +18,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.albert.feature_home.presentation.nav.NavigateFeature
 import com.albert.feature_home.presentation.nav.NavigateFeatureHome
-import com.albert.infinitespirit.addtasks.ui.TasksViewModel
 import com.albert.infinitespirit.detail.ui.DetailScreen
 import com.albert.infinitespirit.home.ui.DemoScreenOne
 import com.albert.infinitespirit.home.ui.DemoScreenOne2
@@ -29,7 +28,6 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val tasksViewModel: TasksViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

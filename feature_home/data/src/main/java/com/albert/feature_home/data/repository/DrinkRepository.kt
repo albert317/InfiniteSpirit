@@ -24,7 +24,7 @@ class DrinkRepository @Inject constructor(
 
     suspend fun requestPopularDrinks() {
         val drinks = drinkRemoteDataSource.drinks()
-        if (!drinkLocalDataSource.isEmpty()) {
+        if (drinkLocalDataSource.isEmpty()) {
             drinks.map { saveDrink(it) }
         } else {
             val localDrinks = drinkLocalDataSource.drinksSimple()

@@ -27,10 +27,11 @@ class CategoryCloudFireStoreDataSource @Inject constructor(private val fireStore
     }
 
     override suspend fun save(categoryModel: CategoryModel): String? = try {
-        fireStore.collection("Category").document().set(categoryModel.toRemote()).await()
-        null
+        val newDocument = fireStore.collection("Category").document()
+        newDocument.set(categoryModel.toRemote()).await()
+        newDocument.id
     } catch (e: Exception) {
-        e.message
+        null
     }
 
     private fun RemoteCategory.toModel(id: String) = CategoryModel(

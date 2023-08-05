@@ -31,10 +31,11 @@ class DrinkCloudFireStoreDataSource @Inject constructor(private val fireStore: F
 
     override suspend fun save(drinkModel: DrinkModel): String? {
         return try {
-            fireStore.collection("Drink").document().set(drinkModel.toRemote()).await()
-            null
+            val newDocumentReference = fireStore.collection("Drink").document()
+            newDocumentReference.set(drinkModel.toRemote()).await()
+            newDocumentReference.id
         } catch (e: Exception) {
-            e.message
+            null
         }
     }
 }

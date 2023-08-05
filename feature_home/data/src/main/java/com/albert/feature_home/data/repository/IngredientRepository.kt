@@ -4,7 +4,10 @@ import com.albert.feature_home.data.datasource.IngredientLocalDataSource
 import com.albert.feature_home.data.datasource.IngredientRemoteDataSource
 import com.albert.feature_home.domain.IngredientModel
 import com.albert.feature_home.domain.IngredientOfDrinkModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class IngredientRepository @Inject constructor(
@@ -12,11 +15,18 @@ class IngredientRepository @Inject constructor(
     private val ingredientRemoteDataSource: IngredientRemoteDataSource,
 ) {
     fun getIngredients(idDrink: String): Flow<List<IngredientOfDrinkModel>> {
+        runBlocking(Dispatchers.IO) {
+            val demo = ingredientLocalDataSource.getOnlyIngredients()
+        }
         return ingredientLocalDataSource.ingredients(idDrink)
     }
 
     suspend fun getIngredientsSimple(): List<IngredientOfDrinkModel> {
         return ingredientLocalDataSource.ingredientsSimple()
+    }
+
+    suspend fun getOnlyIngredients():List<IngredientModel>{
+        return ingredientLocalDataSource.getOnlyIngredients()
     }
 
     suspend fun saveIngredient(ingredientModel: IngredientModel): String? {
@@ -42,5 +52,9 @@ class IngredientRepository @Inject constructor(
                 }
             }
         }
+    }
+
+    suspend fun saveIngredientRemote(ingredientModel: IngredientModel): String? {
+        return ingredientRemoteDataSource.save(ingredientModel)
     }
 }

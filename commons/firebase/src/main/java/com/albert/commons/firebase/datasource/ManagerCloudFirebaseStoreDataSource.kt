@@ -28,10 +28,11 @@ class ManagerCloudFirebaseStoreDataSource @Inject constructor(private val fireSt
     }
 
     override suspend fun save(managerModel: ManagerModel): String? = try {
-        fireStore.collection("ManagerDD").document().set(managerModel.toRemote()).await()
-        null
+        val newDocument=fireStore.collection("ManagerDD").document()
+        newDocument.set(managerModel.toRemote()).await()
+        newDocument.id
     } catch (e: Exception) {
-        e.message
+        null
     }
 
     private fun RemoteManager.toModel(id: String) = ManagerModel(

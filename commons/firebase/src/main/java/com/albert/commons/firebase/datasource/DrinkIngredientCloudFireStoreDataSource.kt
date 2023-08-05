@@ -27,11 +27,11 @@ class DrinkIngredientCloudFireStoreDataSource @Inject constructor(private val fi
     }
 
     override suspend fun save(drinkIngredientModel: DrinkIngredientModel): String? = try {
-        fireStore.collection("DrinkIngredient").document().set(drinkIngredientModel.toRemote())
-            .await()
-        null
+        val newDocument = fireStore.collection("DrinkIngredient").document()
+        newDocument.set(drinkIngredientModel.toRemote()).await()
+        newDocument.id
     } catch (e: Exception) {
-        e.message
+        null
     }
 
     private fun RemoteDrinkIngredient.toModel(id: String) = DrinkIngredientModel(

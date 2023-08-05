@@ -1,5 +1,6 @@
 package com.albert.commons.database.datasource
 
+import android.util.Log
 import com.albert.commons.database.data.dao.IngredientDao
 import com.albert.commons.database.data.entity.IngredientEntity
 import com.albert.commons.database.data.entity.IngredientWithQuantity
@@ -14,11 +15,19 @@ class IngredientsRoomDataSource @Inject constructor(
     private val ingredientDao: IngredientDao,
 ) : IngredientLocalDataSource {
     override fun ingredients(idDrink: String): Flow<List<IngredientOfDrinkModel>> =
-        ingredientDao.getIngredientsForDrink(idDrink)
-            .map { ingredients -> ingredients.map { it.toModel() } }
+        ingredientDao.getIngredientsForDrink()
+            .map { ingredients ->
+                ingredients.map {
+                    val aa = it.toModel()
+                    val bb = aa
+                    it.toModel()
+                }
+            }
 
-    override suspend fun ingredientsSimple(): List<IngredientOfDrinkModel> =
-        ingredientDao.getIngredientsForDrinkSimple().map { it.toModel() }
+    override suspend fun ingredientsSimple(): List<IngredientOfDrinkModel> {
+        val ingredients=ingredientDao.getIngredientsForDrinkSimple()
+        return ingredients.map { it.toModel() }
+    }
 
     override fun findById(id: String): Flow<IngredientModel?> =
         ingredientDao.findById(id).map { it.toModel() }
@@ -46,6 +55,10 @@ class IngredientsRoomDataSource @Inject constructor(
         } catch (e: Exception) {
             e.message
         }
+    }
+
+    override suspend fun getOnlyIngredients(): List<IngredientModel> {
+        return ingredientDao.getOnlyIngredients().map { it.toModel() }
     }
 }
 

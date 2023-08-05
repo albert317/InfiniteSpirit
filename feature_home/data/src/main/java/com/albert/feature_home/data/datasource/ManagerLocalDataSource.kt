@@ -11,5 +11,4 @@ interface ManagerLocalDataSource {
     suspend fun save(managerModel: ManagerModel): String?
     suspend fun isEmpty(): Boolean
     suspend fun update(managerModel: ManagerModel): String?
-
 }

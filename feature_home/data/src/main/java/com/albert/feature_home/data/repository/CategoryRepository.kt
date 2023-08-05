@@ -20,7 +20,7 @@ class CategoryRepository @Inject constructor(
 
     suspend fun requestCategories() {
         val remoteCategories = categoryRemoteDataSource.categories()
-        if (!isEmpty()) {
+        if (isEmpty()) {
             remoteCategories.map { saveCategory(it) }
         } else {
             val localCategories = categoryLocalDataSource.categoriesSimple()

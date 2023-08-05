@@ -11,7 +11,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.albert.infinitespirit"
+        applicationId "com.albert.infinitespirit_1"
         minSdk 24
         targetSdk 33
         versionCode 1

@@ -109,7 +109,7 @@ fun HomeScreen(navController: NavHostController) {
             }
         }
         FloatingActionButton(
-            onClick = { drinksViewModel.saveDrink() },
+            onClick = { drinksViewModel.saveIngredientsOfModel() },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
@@ -241,18 +241,18 @@ fun Drink2Item(navController: NavHostController, drinkModel: DrinkModel) {
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .width(120.dp)
+                    .width(140.dp)
                     .height(140.dp)
             )
 
-            Column(modifier = Modifier.padding(horizontal = 8.dp)) {
+            Column(modifier = Modifier.padding(8.dp)) {
                 Text(
                     text = drinkModel.name,
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = "Una experiencia embriagadora de suavidad y frescura, combinando dulzura y acidez con la exquisita espuma, evocando el deseo irrefrenable de un sorbo más.",
+                    text = drinkModel.description,
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = 6,
                     overflow = TextOverflow.Ellipsis

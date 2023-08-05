@@ -12,4 +12,5 @@ interface IngredientLocalDataSource {
     suspend fun save(ingredient: IngredientModel): String?
     suspend fun isEmpty(): Boolean
     suspend fun update(ingredient: IngredientModel): String?
+    suspend fun getOnlyIngredients(): List<IngredientModel>
 }

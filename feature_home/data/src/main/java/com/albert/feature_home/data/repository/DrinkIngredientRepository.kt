@@ -39,4 +39,9 @@ class DrinkIngredientRepository @Inject constructor(
             }
         }
     }
+
+    suspend fun saveDrinkIngredientRemote(drinkIngredientModel: DrinkIngredientModel):String?{
+        return drinkIngredientRemoteDataSource.save(drinkIngredientModel)
+    }
+
 }

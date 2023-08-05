@@ -31,10 +31,11 @@ class IngredientCloudFirebaseStoreDataSource @Inject constructor(private val fir
 
     override suspend fun save(ingredient: IngredientModel): String? {
         return try {
-            fireStore.collection("Ingredient").document().set(ingredient.toRemote()).await()
-            null
+            val newDocument = fireStore.collection("Ingredient").document()
+            newDocument.set(ingredient.toRemote()).await()
+            newDocument.id
         } catch (e: Exception) {
-            e.message
+            null
         }
     }
 }

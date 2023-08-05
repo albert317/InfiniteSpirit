@@ -6,6 +6,6 @@ data class DrinkModel(
     val description: String,
     val origin: String,
     val photo: String,
-    val timeRegister:String,
-    val timeUpdate:String
+    val timeRegister: String,
+    val timeUpdate: String,
 )

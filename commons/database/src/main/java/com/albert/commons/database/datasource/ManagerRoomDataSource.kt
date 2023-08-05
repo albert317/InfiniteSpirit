@@ -31,7 +31,6 @@ class ManagerRoomDataSource @Inject constructor(
     override suspend fun isEmpty(): Boolean =
         managerDao.managerCount() == 0
 
-
     override suspend fun update(managerModel: ManagerModel): String? = try {
         managerDao.updateManager(managerModel.toEntity())
         null
