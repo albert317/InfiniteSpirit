@@ -5,7 +5,8 @@ import com.albert.feature_home.domain.IngredientOfDrinkModel
 import kotlinx.coroutines.flow.Flow
 
 interface IngredientLocalDataSource {
-    fun ingredients(idDrink: String): Flow<List<IngredientOfDrinkModel>>
+    fun ingredients():Flow<List<IngredientModel>>
+    fun ingredientsOfDrink(idDrink: String): Flow<List<IngredientOfDrinkModel>>
     suspend fun ingredientsSimple(): List<IngredientOfDrinkModel>
     fun findById(id: String): Flow<IngredientModel?>
     suspend fun findByIdSimple(id: String): IngredientModel?

@@ -6,30 +6,31 @@ import androidx.room.Query
 import androidx.room.Update
 import com.albert.commons.database.data.entity.IngredientEntity
 import com.albert.commons.database.data.entity.IngredientWithQuantity
-import com.albert.feature_home.domain.IngredientModel
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface IngredientDao {
     @Query(
         """
-        SELECT DrinkIngredientEntity.id AS id, DrinkIngredientEntity.idDrink AS idDrink, DrinkIngredientEntity.idIngredient AS idIngredient, "IngredientEntity.name" AS name, "IngredientEntity.type" AS type, DrinkIngredientEntity.quantity AS quantity, DrinkIngredientEntity.timeRegister AS timeRegister, DrinkIngredientEntity.timeUpdate AS timeUpdate
-        FROM DrinkIngredientEntity
-    """
+        SELECT d.id, d.idDrink, d.idIngredient, i.name, i.type, d.quantity, d.timeRegister, d.timeUpdate
+        FROM DrinkIngredientEntity d INNER JOIN  IngredientEntity i ON d.idIngredient = i.id
+        """
     )
     fun getIngredientsForDrink(): Flow<List<IngredientWithQuantity>>
 
     @Query(
-        """
-        SELECT DrinkIngredientEntity.id AS id, DrinkIngredientEntity.idDrink AS idDrink, IngredientEntity.id AS idIngredient, IngredientEntity.name, IngredientEntity.type, DrinkIngredientEntity.quantity, DrinkIngredientEntity.timeRegister, DrinkIngredientEntity.timeUpdate
+        """SELECT DrinkIngredientEntity.id AS id, DrinkIngredientEntity.idDrink AS idDrink, IngredientEntity.id AS idIngredient, IngredientEntity.name  AS name, IngredientEntity.type AS type, DrinkIngredientEntity.quantity AS quantity, DrinkIngredientEntity.timeRegister AS timeRegister, DrinkIngredientEntity.timeUpdate AS timeUpdate
         FROM IngredientEntity
-        INNER JOIN DrinkIngredientEntity ON IngredientEntity.id = DrinkIngredientEntity.idIngredient
+        INNER JOIN DrinkIngredientEntity ON IngredientEntity.id = DrinkIngredientEntity.idIngredient 
     """
     )
     suspend fun getIngredientsForDrinkSimple(): List<IngredientWithQuantity>
 
     @Query("SELECT * from IngredientEntity")
-    fun getOnlyIngredients():List<IngredientEntity>
+    fun getIngredients(): Flow<List<IngredientEntity>>
+
+    @Query("SELECT * from IngredientEntity")
+    fun getOnlyIngredients(): List<IngredientEntity>
 
     @Query("SELECT * FROM IngredientEntity WHERE id=:id")
     fun findById(id: String): Flow<IngredientEntity>

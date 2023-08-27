@@ -1,6 +1,8 @@
 package com.albert.feature_home.presentation.ui.detail
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,12 +15,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -28,6 +35,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -51,8 +59,6 @@ fun DetailScreen(
     drinkViewModel.getDrink(idDrink)
     drinkViewModel.getIngredients(idDrink)
     drinkViewModel.getPreparationSteps(idDrink)
-    val colorResource1 = colorResource(id = R.color.resource1)
-    val colorResource2 = colorResource(id = R.color.resource2)
 
     if (!uiStateDrink.isLoading) {
         uiStateDrink.apply {
@@ -74,10 +80,7 @@ fun ContentDetail(
     preparationSteps: List<PreparationStepModel>,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
             item {
                 val imagePainter = painterResource(R.drawable.lasagna)
                 Box(
@@ -122,32 +125,52 @@ fun ContentDetail(
             }
 
             item {
-                Text(
-                    text = "Origen:",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    fontWeight = FontWeight.SemiBold
-                )
-                Text(
-                    text = drink.origin,
-                    style = MaterialTheme.typography.bodyMedium,
+                Row(
+                    verticalAlignment = Alignment.Bottom,
                     modifier = Modifier.padding(horizontal = 16.dp)
-                )
+                ) {
+                    Text(
+                        text = "Origen:",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        text = drink.origin,
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(4.dp))
             }
 
             item {
-                Text(
-                    text = "Descripción:",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    fontWeight = FontWeight.SemiBold
-                )
-                Text(
-                    text = drink.description,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
+                var expanded by remember { mutableStateOf(true) }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .clickable { expanded = !expanded }) {
+                    Text(
+                        text = "Descripción:",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.weight(1f), fontWeight = FontWeight.SemiBold
+                    )
+                    Icon(
+                        imageVector = if (expanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
+                        contentDescription = "Expand or collapse icon"
+                    )
+                }
+
+                AnimatedVisibility(visible = expanded) {
+                    Text(
+                        text = drink.description,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(4.dp))
             }
 
@@ -155,8 +178,10 @@ fun ContentDetail(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "Ingredientes:",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(horizontal = 16.dp),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth(),
                     fontWeight = FontWeight.SemiBold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
@@ -164,7 +189,7 @@ fun ContentDetail(
             itemsIndexed(ingredients) { index, ingredient ->
                 Row(
                     modifier = Modifier
-                        .background(if (index % 2 == 0) Color(0xFFF5F5F5) else Color.Transparent)
+                        .background(if (index % 2 == 0) Color(0x20000000) else Color.Transparent)
                         .padding(vertical = 4.dp, horizontal = 16.dp)
                 ) {
                     Text(
@@ -185,8 +210,10 @@ fun ContentDetail(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "Preparación:",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(horizontal = 16.dp),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth(),
                     fontWeight = FontWeight.SemiBold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
@@ -194,7 +221,7 @@ fun ContentDetail(
             itemsIndexed(preparationSteps) { index, step ->
                 Row(
                     modifier = Modifier
-                        .background(if (index % 2 == 0) Color(0xFFF5F5F5) else Color.Transparent)
+                        .background(if (index % 2 == 0) Color(0x20000000) else Color.Transparent)
                         .padding(vertical = 4.dp, horizontal = 16.dp)
                 ) {
                     Text(
@@ -222,6 +249,18 @@ fun ContentDetail(
             Icon(Icons.Default.Add, contentDescription = "Agregar")
         }
     }
+}
 
+@Preview(showBackground = true)
+@Composable
+fun PreviewHome() {
+    val ingredient = IngredientOfDrinkModel("", "", "", "Pisco", "", "3 onzas", "", "")
+    val drink = DrinkModel("id", "Name", "description", "origin", "", "", "")
+    val step = PreparationStepModel("","",1,"paso de preparación","","")
+    ContentDetail(
+        drink = drink,
+        ingredients = listOf(ingredient,ingredient,ingredient),
+        preparationSteps = listOf(step,step.copy(order = 2),step.copy(order = 3))
+    )
 }
 

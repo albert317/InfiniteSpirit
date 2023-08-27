@@ -10,6 +10,7 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -37,6 +38,17 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
+private val ElegantColorPalette = darkColorScheme(
+    primary = Color(0xFF000000), // Negro puro
+    secondary = Color(0xFF424242), // Gris un poco más claro
+    background = Color(0xFF303030), // Fondo gris muy oscuro
+    surface = Color(0xFF484848), // Superficies en un gris oscuro
+    onPrimary = Color.White, // Texto en el color primario
+    onSecondary = Color.White, // Texto en el color secundario
+    onBackground = Color.White, // Texto en el fondo
+    onSurface = Color.White // Texto en las superficies
+)
+
 @Composable
 fun InfiniteSpiritTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -50,8 +62,8 @@ fun InfiniteSpiritTheme(
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> ElegantColorPalette
+        else -> ElegantColorPalette
     }
     val view = LocalView.current
     if (!view.isInEditMode) {

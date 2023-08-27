@@ -9,5 +9,8 @@
     <color name="icon_spa">#1E2761</color>
 
     <color name="semi_transaparent">#68000000</color>
+    <color name="semi_transaparent_two">#99000000</color>
+
+    <color name="sub_title">#FF6650a4</color>
 
 </resources>

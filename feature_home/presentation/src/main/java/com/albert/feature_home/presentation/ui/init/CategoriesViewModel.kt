@@ -1,13 +1,14 @@
 package com.albert.feature_home.presentation.ui.init
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.albert.feature_home.domain.CategoryModel
 import com.albert.feature_home.usecase.category.GetCategoriesUseCase
 import com.albert.feature_home.usecase.category.SaveCategoryUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,8 +19,8 @@ class CategoriesViewModel @Inject constructor(
     private val saveCategoryUseCase: SaveCategoryUseCase,
 ) : ViewModel() {
 
-    private val _uiStateCategory = MutableStateFlow<CategoryUiState>(CategoryUiState.Loading)
-    val uiStateCategory: StateFlow<CategoryUiState> = _uiStateCategory
+    private val _uiStateCategory: MutableState<CategoryUiState> = mutableStateOf(CategoryUiState())
+    val uiStateCategory: State<CategoryUiState> = _uiStateCategory
 
     init {
         getCategories()
@@ -28,7 +29,8 @@ class CategoriesViewModel @Inject constructor(
     private fun getCategories() {
         viewModelScope.launch {
             getCategoriesUseCase().catch { }.collect { categories ->
-                _uiStateCategory.value = CategoryUiState.Success(categories)
+                _uiStateCategory.value =
+                    _uiStateCategory.value.copy(categories = categories, loading = false)
             }
         }
     }
@@ -50,8 +52,8 @@ class CategoriesViewModel @Inject constructor(
 
 }
 
-sealed interface CategoryUiState {
-    object Loading : CategoryUiState
-    data class Error(val throwable: Throwable) : CategoryUiState
-    data class Success(val categories: List<CategoryModel>) : CategoryUiState
-}
+data class CategoryUiState(
+    val loading: Boolean = false,
+    val throwable: Throwable? = null,
+    val categories: List<CategoryModel> = emptyList(),
+)

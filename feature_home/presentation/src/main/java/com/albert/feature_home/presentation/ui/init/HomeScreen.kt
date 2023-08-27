@@ -14,10 +14,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,86 +37,79 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.albert.feature_home.domain.CategoryModel
 import com.albert.feature_home.domain.DrinkModel
+import com.albert.feature_home.domain.IngredientModel
+import com.albert.feature_home.presentation.BuildConfig
 import com.albert.feature_home.presentation.R
 import com.albert.feature_home.presentation.nav.FeatureScreen
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
-
     val drinksViewModel = hiltViewModel<DrinksViewModel>()
-    val uiStateDrinks by produceState<DrinksUiState>(
-        initialValue = DrinksUiState.Loading, key1 = lifecycle, key2 = drinksViewModel
-    ) {
-        lifecycle.repeatOnLifecycle(state = Lifecycle.State.STARTED) {
-            drinksViewModel.uiStateDrinks.collect { drinks -> value = drinks }
-        }
-    }
+    val categoriesViewModel = hiltViewModel<CategoriesViewModel>()
+    val searchViewModel = hiltViewModel<SearchViewModel>()
 
-    val categoryViewModel = hiltViewModel<CategoriesViewModel>()
-    val categoryUiState by produceState<CategoryUiState>(
-        initialValue = CategoryUiState.Loading, key1 = lifecycle, key2 = categoryViewModel
-    ) {
-        lifecycle.repeatOnLifecycle(state = Lifecycle.State.STARTED) {
-            categoryViewModel.uiStateCategory.collect { categories -> value = categories }
-        }
-    }
+    val uiStateDrinks = drinksViewModel.uiStateDrinks
+    val uiStateCategories = categoriesViewModel.uiStateCategory
+    val uiSearchState = searchViewModel.uiSearchState
 
-    val colorResource1 = colorResource(id = R.color.resource1)
-    val colorResource2 = colorResource(id = R.color.resource2)
+    Content(
+        uiStateDrinks.value.drinks,
+        uiStateCategories.value.categories,
+        uiSearchState.value.ingredients,
+        { host -> navController.navigate(host) }) { drinksViewModel.saveIngredientsOfModel() }
+}
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-        //.background(Brush.horizontalGradient(listOf(colorResource2, colorResource1)))
-    ) {
-        //Image(painter = painterResource(R.drawable.back_ground_demo), modifier = Modifier.fillMaxSize(), contentDescription = null)
+@Composable
+fun Content(
+    drinks: List<DrinkModel> = emptyList(),
+    categories: List<CategoryModel> = emptyList(),
+    ingredients: List<IngredientModel> = emptyList(),
+    onClickDrink: (String) -> Unit = {},
+    onSaveProcessFirebase: () -> Unit = {},
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
         Column {
-            SearchBarHome()
-            when (uiStateDrinks) {
-                is DrinksUiState.Error -> {}
-                is DrinksUiState.Loading -> {}
-                is DrinksUiState.Success -> {
-                    if (categoryUiState is CategoryUiState.Success) {
-                        PopularList(
-                            navController,
-                            (uiStateDrinks as DrinksUiState.Success).drinks,
-                            (categoryUiState as CategoryUiState.Success).categories
-                        )
-                    }
-                }
-            }
+            SearchBarHome(
+                ingredients,
+                drinks
+            )
+            PopularList(
+                drinks,
+                categories,
+                onClickDrink
+            )
         }
-        FloatingActionButton(
-            onClick = { drinksViewModel.saveIngredientsOfModel() },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp)
-        ) {
-            Icon(Icons.Default.Add, contentDescription = "Agregar")
+        if (BuildConfig.DEBUG) {
+            FloatingActionButton(
+                onClick = { onSaveProcessFirebase() },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Agregar")
+            }
         }
     }
 }
@@ -122,7 +117,10 @@ fun HomeScreen(navController: NavHostController) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchBarHome() {
+fun SearchBarHome(
+    ingredients: List<IngredientModel> = emptyList(),
+    drinks: List<DrinkModel> = emptyList(),
+) {
     val ctx = LocalContext.current
     var query by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) }
@@ -131,7 +129,8 @@ fun SearchBarHome() {
         Toast.makeText(ctx, "Search $name", Toast.LENGTH_SHORT).show()
         active = false
     }
-    SearchBar(query = query,
+    SearchBar(
+        query = query,
         onQueryChange = { query = it },
         onSearch = { onSearch(query) },
         active = active,
@@ -140,44 +139,56 @@ fun SearchBarHome() {
             .wrapContentHeight()
             .fillMaxWidth()
             .padding(4.dp),
-        placeholder = { Text(text = "Search") },
+        placeholder = { Text(text = "Buscar") },
         trailingIcon = {
             IconButton(onClick = { onSearch(query) }, enabled = query.isNotEmpty()) {
                 Icon(imageVector = Icons.Default.Search, contentDescription = "search")
             }
         }) {
         if (query.isNotEmpty()) {
-            val filteredCountries = countries.filter { it.second.contains(query, true) }
+            val filteredIngredients = ingredients.filter { it.name.contains(query, true) }
             LazyColumn {
-                items(filteredCountries) { (flag, name) ->
-                    Text(text = "$flag $name", modifier = Modifier
-                        .padding(16.dp)
+                items(filteredIngredients) { ingredient ->
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
                         .clickable {
-                            Toast
-                                .makeText(ctx, name, Toast.LENGTH_SHORT)
-                                .show()
                             active = false
-                            query = name
-                        })
+                            query = ingredient.name
+                        }) {
+                        Text(
+                            text = "🧺 ${ingredient.name} - ${ingredient.id}",
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+
+                }
+                val filteredDrinks = drinks.filter { it.name.contains(query, true) }
+                items(filteredDrinks) { drink ->
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            active = false
+                            query = drink.name
+                        }) {
+                        Text(
+                            text = "🍸 ${drink.name} - ${drink.id}",
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+
                 }
             }
         }
     }
 }
 
-
 @Composable
-fun CategoryList(navController: NavHostController, categories: List<CategoryModel>) {
-    LazyRow {
-        items(categories) { obj ->
-            CategoryItem(navController, obj)
-        }
-    }
+fun CategoryList(categories: List<CategoryModel>) {
+    LazyRow { items(categories) { obj -> CategoryItem(obj) } }
 }
 
-
 @Composable
-fun CategoryItem(navController: NavHostController, categoryModel: CategoryModel) {
+fun CategoryItem(categoryModel: CategoryModel) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(8.dp)
     ) {
@@ -203,74 +214,72 @@ fun CategoryItem(navController: NavHostController, categoryModel: CategoryModel)
 
 @Composable
 fun PopularList(
-    navController: NavHostController,
     drinks: List<DrinkModel>,
     categories: List<CategoryModel>,
+    onClickDrink: (String) -> Unit,
 ) {
-    LazyColumn(
+    Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        item {
-            CategoryList(navController, categories)
-        }
-        items(drinks) { obj ->
-            Drink2Item(navController, obj)
-        }
+        CategoryList(categories)
+        Drinks(drinks, onClickDrink)
     }
 }
 
 @Composable
-fun Drink2Item(navController: NavHostController, drinkModel: DrinkModel) {
-    val colorResource3 = colorResource(id = R.color.resource3)
+fun Drinks(drinks: List<DrinkModel>, onClickDrink: (String) -> Unit) {
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(150.dp),
+        content = {
+            items(drinks) { obj ->
+                Drink2Item(onClickDrink, obj)
+            }
+        }
+    )
+}
+
+@Composable
+fun Drink2Item(onClickDrink: (String) -> Unit, drinkModel: DrinkModel) {
     val host = FeatureScreen.DetailScreen.withArgs(
         mapOf(Pair(FeatureScreen.ID_DRINK, drinkModel.id))
     )
     Card(
         Modifier
             .fillMaxWidth()
-            .padding(8.dp, 0.dp)
+            .padding(4.dp)
             .clickable {
-                navController.navigate(host)
+                onClickDrink(host)
             }, shape = RoundedCornerShape(8.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically, modifier = Modifier.wrapContentHeight()
-        ) {
+        Box(modifier = Modifier.wrapContentHeight()) {
+            val imagePainter = painterResource(R.drawable.back_ground_preparation)
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current).data(drinkModel.photo).build(),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .width(140.dp)
-                    .height(140.dp)
+                    .fillMaxWidth()
+                    .height(230.dp),
+                placeholder = imagePainter
             )
-
-            Column(modifier = Modifier.padding(8.dp)) {
+            Box(
+                modifier = Modifier
+                    .background(
+                        Brush.verticalGradient(listOf(Color.Transparent, Color.Black))
+                    )
+                    .align(Alignment.BottomCenter)
+                    .padding(8.dp)
+                    .fillMaxWidth()
+            ) {
                 Text(
                     text = drinkModel.name,
                     style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
                 )
-                Text(
-                    text = drinkModel.description,
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 6,
-                    overflow = TextOverflow.Ellipsis
-                )
-                val colorFire = colorResource(id = R.color.icon_fire)
-                val colorSmile = colorResource(id = R.color.icon_smile)
-                val colorSpa = colorResource(id = R.color.icon_spa)
-
-                /*Row(
-                    modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start
-                ) {
-                    val countrie = countries.find { it.second == "Peru" }
-                    countrie?.let { (flag, name) ->
-                        Text(text = "$flag")
-                    }
-
-                }*/
             }
+
         }
     }
 }
@@ -292,30 +301,20 @@ fun ItemTag(color: Color, icon: ImageVector) {
     }
 }
 
-val countries = listOf(
-    "🇵🇪" to "Peru",
-    "🇨🇱" to "Chile",
-    "🇦🇷" to "Argentina",
-    "🇧🇷" to "Brazil",
-    "🇨🇴" to "Colombia",
-    "🇪🇨" to "Ecuador",
-    "🇵🇾" to "Paraguay",
-    "🇺🇾" to "Uruguay",
-    "🇧🇴" to "Bolivia",
-    "🇻🇪" to "Venezuela",
-    "🇬🇾" to "Guyana",
-    "🇸🇷" to "Suriname",
-    "🇬🇫" to "French Guiana",
-    "🇵🇦" to "Panama",
-    "🇨🇷" to "Costa Rica",
-    "🇳🇮" to "Nicaragua",
-    "🇭🇳" to "Honduras",
-    "🇬🇹" to "Guatemala",
-    "🇧🇿" to "Belize",
-    "🇲🇽" to "Mexico",
-    "🇨🇺" to "Cuba",
-    "🇩🇴" to "Dominican Republic",
-    "🇭🇹" to "Haiti",
-    // Agrega más países según sea necesario...
-)
-
+@Preview(showBackground = true)
+@Composable
+fun PreviewHome() {
+    val drink = DrinkModel(
+        "2",
+        "name",
+        "description",
+        "Perú",
+        "",
+        "",
+        ""
+    )
+    Content(
+        drinks = listOf(drink, drink, drink, drink, drink),
+        categories = emptyList(),
+    )
+}
