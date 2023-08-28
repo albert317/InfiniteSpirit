@@ -61,11 +61,16 @@ import com.albert.feature_home.domain.CategoryModel
 import com.albert.feature_home.domain.DrinkModel
 import com.albert.feature_home.domain.IngredientModel
 import com.albert.feature_home.presentation.BuildConfig
+import com.albert.feature_home.presentation.Constants
 import com.albert.feature_home.presentation.R
+import com.albert.feature_home.presentation.admob.AdViewCompose
 import com.albert.feature_home.presentation.nav.FeatureScreen
+import com.google.android.gms.ads.MobileAds
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
+    MobileAds.initialize(LocalContext.current)
+
     val drinksViewModel = hiltViewModel<DrinksViewModel>()
     val categoriesViewModel = hiltViewModel<CategoriesViewModel>()
     val searchViewModel = hiltViewModel<SearchViewModel>()
@@ -79,6 +84,7 @@ fun HomeScreen(navController: NavHostController) {
         uiStateCategories.value.categories,
         uiSearchState.value.ingredients,
         { host -> navController.navigate(host) }) { drinksViewModel.saveIngredientsOfModel() }
+
 }
 
 @Composable
@@ -92,9 +98,11 @@ fun Content(
     Box(modifier = Modifier.fillMaxSize()) {
         Column {
             SearchBarHome(
-                ingredients,
-                drinks
+                emptyList(),
+                drinks,
+                onClickDrink
             )
+            AdViewCompose(Constants.ad_id_banner)
             PopularList(
                 drinks,
                 categories,
@@ -120,6 +128,7 @@ fun Content(
 fun SearchBarHome(
     ingredients: List<IngredientModel> = emptyList(),
     drinks: List<DrinkModel> = emptyList(),
+    onClickDrink: (String) -> Unit = {},
 ) {
     val ctx = LocalContext.current
     var query by remember { mutableStateOf("") }
@@ -169,6 +178,10 @@ fun SearchBarHome(
                         .clickable {
                             active = false
                             query = drink.name
+                            val host = FeatureScreen.DetailScreen.withArgs(
+                                mapOf(Pair(FeatureScreen.ID_DRINK, drink.id))
+                            )
+                            onClickDrink(host)
                         }) {
                         Text(
                             text = "🍸 ${drink.name} - ${drink.id}",
